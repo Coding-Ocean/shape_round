@@ -95,20 +95,18 @@ void gmain() {
     int heartIdx = createHeart();
     int roundIdx = createRoundPolygon(4, 10, 0.4, 0.6);
     float px = width / 2, py = height /2, deg = 0, scale = 300;
-    float deg2 = 0;
     angleMode(DEGREES);
     while (notQuit) {
-        //deg += 1;
-        deg2 += 1;
+        deg += 1;
         clear(255);
         strokeWeight(1);
         fill(0, 255, 0, 128);
-        shape(polygonIdx, px, py, deg, scale);
+        shape(polygonIdx, px, py, 0, scale);
         fill(255, 255, 0, 128);
-        shape(starIdx, px, py, -deg2, scale);
+        shape(starIdx, px, py, -deg, scale);
         fill(255, 0, 0, 128);
-        shape(heartIdx, px, py, deg2, scale);
+        shape(heartIdx, px, py, deg, scale);
         fill(160, 200, 255, 128);
-        shape(roundIdx, px, py, deg, scale);
+        shape(roundIdx, px, py, 0, scale);
     }
 }
