@@ -15,8 +15,8 @@ int createPolygon() {
     float deg = 360.0f / NUM;
     angleMode(DEGREES);
     for (int i = 0; i < NUM; i++) {
-        vertices[i].x = sin(deg*i);
-        vertices[i].y = -cos(deg*i);
+        vertices[i].x = sin(deg * i);
+        vertices[i].y = -cos(deg * i);
     }
     return createShape(vertices, NUM);
 }
@@ -40,66 +40,79 @@ int createHeart() {
     for (int i = 0; i < NUM; i++) {
         float t = deg * i;
         vertices[i].x = 
-            pow( sin(t), 3 ) * 0.95f;
+            pow( sin(t), 3 ) * 0.94f;
         vertices[i].y = -(
             13 * cos(t) -
             5 * cos(2 * t) -
             2 * cos(3 * t) -
-            1 * cos(4 * t) ) / 16 * 0.95f;
+            1 * cos(4 * t) ) / 16 * 0.94f;
     }
     return createShape(vertices, NUM);
 }
-//ŠpŠÛ‘½ŠpŒ`
+//Šp‚ªŠÛ‚Ü‚Á‚½‘½ŠpŒ`‚ð‚Â‚­‚é
 int createRoundPolygon(
     //Šp”(Šp‚É‚È‚éîŒ`‚Ì”)
     int numCorners,
-    //îŒ^‚ð‚ð•ªŠ„‚·‚é”iŠp‚ÌŠŠ‚ç‚©‚³j
+    //Šp‚Æ‚È‚éîŒ^‚ð‚ð•ªŠ„‚·‚é”iŠp‚ÌŠŠ‚ç‚©‚³j
     int divNum,
-    //îŒ`‚Ì”¼Œa
-    float radius,
-    //’†S‚©‚çîŒ`‚Ì’†S‚Ü‚Å‚Ì‹——£
-    float vlen
+    //Šp‚Æ‚È‚éîŒ`‚Ì”¼Œa
+    float fanRadius,
+    //’†S‚©‚çîŒ`‚Ì—v‚Ü‚Å‚Ì‹——£
+    float length
 ) {
     //•K—v‚È”‚¾‚¯’¸“_‚Ì“ü‚ê•¨‚ð—pˆÓ
     const int numVertices = (divNum + 1) * numCorners;
     SHAPE_VERTEX* vertices = new SHAPE_VERTEX[numVertices];
     //---”½ŽžŒv‰ñ‚è‚Å’¸“_‚ð—pˆÓ‚µ‚Ä‚¢‚­---
-    //îŒ`‚Ì’†SŠp
-    const float fanDeg = 360.0f / numCorners;
+    //îŒ`‚Ì—v‚ÌˆÊ’u‚ðŒˆ‚ß‚é‚½‚ß‚ÉŽg—p‚·‚éŠp“x(îŒ`‚Ì’†SŠp‚Å‚à‚ ‚é)
+    const float deg = 360.0f / numCorners;
     //îŒ`‚Ì’†SŠp‚ð‚³‚ç‚É•ªŠ„‚µ‚½Šp“xiŠp‚ÌŠŠ‚ç‚©‚³j
-    const float divDeg = fanDeg / divNum;
+    const float divDeg = deg / divNum;
     //Å‰‚É’¸“_‚ð—pˆÓ‚·‚éŠp“x
-    float offsetDeg = (180.0f - fanDeg) / 2.0f;
+    float offsetDeg = (180.0f - deg) / 2.0f;
     angleMode(DEGREES);
     for (int i = 0; i < numVertices; i++) {
         //îŒ`‚Ì—v‚ÌˆÊ’u
-        int wi = i / (numVertices / numCorners);
-        float vx = -sin(fanDeg * wi) * vlen;
-        float vy = -cos(fanDeg * wi) * vlen;
-        //’¸“_ˆÊ’u
-        float deg = offsetDeg + divDeg * (i - wi);
-        vertices[i].x = vx + cos(deg) * radius;
-        vertices[i].y = vy + -sin(deg) * radius;
+        int cornerIdx = i / (numVertices / numCorners);
+        float fanCenterX = -sin(deg * cornerIdx) * length;
+        float fanCenterY = -cos(deg * cornerIdx) * length;
+        //ŠeîŒ^‚Ì’¸“_ˆÊ’u
+        float fanDeg = offsetDeg + divDeg * (i - cornerIdx);
+        vertices[i].x = fanCenterX + cos(fanDeg) * fanRadius;
+        vertices[i].y = fanCenterY + -sin(fanDeg) * fanRadius;
     }
     //@ƒVƒF[ƒv‚ðì‚Á‚Ä”Ô†‚ð•Ô‚·
     int shapeIdx = createShape(vertices, numVertices);
     delete[] vertices;
     return shapeIdx;
 }
-
+#define A
+#ifdef A
 void gmain() {
-    window(1000, 1000);
+    window(1000, 1000, full);
+    int roundIdx = createRoundPolygon(3, 6, 0.2f, 0.8f);
+    while (notQuit) {
+        clear(220);
+        strokeWeight(6);
+        shape(roundIdx, 500, 500, 0, 300);
+    }
+}
+#endif
+#ifdef B
+void gmain() {
+    window(1000, 1000, full);
     int triangleIdx = createTriangle();
     int polygonIdx = createPolygon();
     int starIdx = createStar();
     int heartIdx = createHeart();
-    int roundIdx = createRoundPolygon(4, 10, 0.4, 0.6);
-    float px = width / 2, py = height /2, deg = 0, scale = 300;
+    int roundIdx = createRoundPolygon(3, 12, 0.4f, 0.6f);
+    float px = width / 2, py = height / 2, deg = 0, scale = 300;
     angleMode(DEGREES);
+    ShowCursor(FALSE);
     while (notQuit) {
         deg += 1;
-        clear(255);
-        strokeWeight(1);
+        clear(220);
+        strokeWeight(6);
         fill(0, 255, 0, 128);
         shape(polygonIdx, px, py, 0, scale);
         fill(255, 255, 0, 128);
@@ -109,4 +122,82 @@ void gmain() {
         fill(160, 200, 255, 128);
         shape(roundIdx, px, py, 0, scale);
     }
+    ShowCursor(TRUE);
 }
+#endif
+#ifdef C
+void explanation(int numCorners, int divNum, float fanRadius, float length, 
+    float px, float py, float scale)
+{
+    const int numVertices = (divNum + 1) * numCorners;
+    //îŒ`‚Ì—v‚ÌˆÊ’u‚ðŒˆ‚ß‚é‚½‚ß‚ÉŽg—p‚·‚éŠp“x(îŒ`‚Ì’†SŠp‚Å‚à‚ ‚é)
+    const float deg = 360.0f / numCorners;
+    //îŒ`‚Ì’†SŠp‚ð‚³‚ç‚É•ªŠ„‚µ‚½Šp“xiŠp‚ÌŠŠ‚ç‚©‚³j
+    const float divDeg = deg / divNum;
+    //Å‰‚É’¸“_‚ð—pˆÓ‚·‚éŠp“x
+    float offsetDeg = (180.0f - deg) / 2.0f;
+    angleMode(DEGREES);
+    for (int i = 0; i < numVertices; i++) {
+        //îŒ`‚Ì—v‚ÌˆÊ’u
+        int cornerIdx = i / (numVertices / numCorners);
+        float fanCenterX = px + -sin(deg * cornerIdx) * length * scale;
+        float fanCenterY = py + -cos(deg * cornerIdx) * length * scale;
+        stroke(0, 0, 255);
+        strokeWeight(6);
+        line(px, py, fanCenterX, fanCenterY);
+        //ŠeîŒ^‚Ì’¸“_ˆÊ’u
+        int idx = i - cornerIdx;
+        float fanDeg = offsetDeg + divDeg * (i - cornerIdx);
+        float x = fanCenterX + cos(fanDeg) * fanRadius * scale;
+        float y = fanCenterY + -sin(fanDeg) * fanRadius * scale;
+        stroke(255, 0, 0);
+        line(fanCenterX, fanCenterY, x, y);
+        stroke(0, 0, 0);
+        strokeWeight(20);
+        point(x, y);
+    }
+    //’†S‚Ì•`‰æ
+    stroke(0, 0, 255);
+    strokeWeight(20);
+    point(px, py);
+    strokeWeight(6);
+    //ƒeƒLƒXƒgî•ñ
+    fill(0);
+    text(" length=" + (let)length + "*scale", px, py - length * scale / 2);
+    text("fanRadius=" + (let)fanRadius + "*scale", px + fanRadius * scale / 2, py - length * scale - 10);
+    text("numCorners=" + (let)numCorners, px, py - scale - 80);
+    text("divNum=" + (let)divNum, px, py - scale -40);
+}
+void gmain() {
+    window(1000, 1000, full);
+
+    //Šp‚ÌŠÛ‚¢‘½ŠpŒ`‚ð‚Â‚­‚é--------------------------------------------------
+    //Šp”(Šp‚É‚È‚éîŒ`‚Ì”)
+    int numCorners = 4;
+    //Šp‚Æ‚È‚éîŒ^‚ð‚ð•ªŠ„‚·‚é”iŠp‚ÌŠŠ‚ç‚©‚³j
+    int divNum = 4;
+    //Šp‚Æ‚È‚éîŒ`‚Ì”¼Œa
+    float fanRadius = 0.5f;
+    //’†S‚©‚çîŒ`‚Ì—v‚Ü‚Å‚Ì‹——£
+    float length = 1.0f - fanRadius;
+    int roundIdx = createRoundPolygon(numCorners, divNum, fanRadius, length);
+    
+    //Šp‚ÌŠÛ‚¢‘½ŠpŒ`‚ð•`‰æ‚·‚é------------------------------------------------
+    clear(220);
+    float px = width / 2;
+    float py = height / 2;
+    float deg = 0;
+    float scale = 300;
+    stroke(156);
+    strokeWeight(6);
+    fill(255, 255, 0);
+    shape(roundIdx, px, py, deg, scale);
+    
+    //à–¾—p‚Ì•â•ü‚ð•\Ž¦‚·‚é------------------------------------------------
+    explanation(numCorners, divNum, fanRadius, length, px, py, scale);
+
+
+    while (notQuit) {
+    }
+}
+#endif
